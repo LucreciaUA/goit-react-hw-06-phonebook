@@ -4,6 +4,7 @@ import { ContactForm } from "./contact-form/contact-form";
 import { Filter } from "./filter/filter";
 import { ContactList } from "./contact-list/contact-list";
 
+
 class Phonebook extends Component {
     state = {
         contactss: [],
@@ -11,60 +12,48 @@ class Phonebook extends Component {
     }
 
 
-    generateId = () => { 
-        const ids = this.state.contactss.map((contact) => parseInt(contact.id.split('-')[1]));
-        const max = Math.max(...ids);
-        const newId = max + 1||1;
-        const contactId = `id-${String(newId).padStart(2, '0')}`;
-        return contactId;
-    }
+   // generateId = () => { 
+   //     const ids = this.state.contactss.map((contact) => parseInt(contact.id.split('-')[1]));
+   //     const max = Math.max(...ids);
+   //     const newId = max + 1||1;
+   //     const contactId = `id-${String(newId).padStart(2, '0')}`;
+   //     return contactId;
+  //  }
 
     deleteContacts = (id) => {
         const newData = this.state.contactss.filter((contact) => contact.id !== id)
-  
-       
+
         this.setState(
-            { contacts: newData })
+            { contactss: newData })
        
     }
 
-   nameChange = (e) => {
-        this.setState({ name: e.target.value });
-    };
-
-  numberChange = (e) => {
-        this.setState({ number: e.target.value });
-  };
+   
     
     inputChange = (e) => {
         this.setState({ filter: e.target.value });
     };
     
 
-    addContact = (e) => {
-        e.preventDefault();
-        const { name, number } = this.state;
-        const isExisting = this.state.contactss.some((contact) =>
-        { return (contact.name.toLowerCase() === name.toLowerCase() || contact.number === number) })
+    addContact = (newContact) => {
         
-        if(!isExisting)
-        {const newContact = {
-            id: this.generateId(),
-            name,
-            number,
-        }
+        const isExisting = this.state.contactss.some((contact) =>
+        { return (contact.name.toLowerCase() === newContact.name.toLowerCase() || contact.number === newContact.number) })
+        
+        if (!isExisting) {
+  
+
         const newData = [...this.state.contactss, newContact]
         
 
             this.setState({
-            contacts: newData,
-            name: '',
-            number:'',
-            
-        })
+            contactss: newData,
+
+            })
+            console.log(this.state.contactss)
         }
         else {
-            alert(`${name} is already in your contacts`)
+            alert(`${newContact.name} is already in your contacts`)
         }
     }
 
