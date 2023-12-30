@@ -1,11 +1,11 @@
 import React from "react"
  import './filter.module.css'
 
-export const Filter =({state, inputChange})=>{
+export const Filter =({filter, inputChange})=>{
 return (<input
          type="search"
          name="search"
          id="search"
-         value={state.filter}
+         value={filter}
          onChange={inputChange} />)
  }

@@ -1,79 +1,81 @@
-import { Component } from "react";
+import {useEffect, useState } from "react";
 import css from './phonebook.module.css'
 import { ContactForm } from "./contact-form/contact-form";
 import { Filter } from "./filter/filter";
 import { ContactList } from "./contact-list/contact-list";
+import React from 'react';
 
 
-class Phonebook extends Component {
-    state = {
-        contactss: [],
-        filter: '',
-    }
+const Phonebook = ()=> {
 
+    const [contacts, setContacts] = useState(() => {
+        const storedContacts = localStorage.getItem('contacts');
+        return storedContacts ? JSON.parse(storedContacts) : [];
+    })
+    const [filter, setFilter] = useState('')
 
-   // generateId = () => { 
-   //     const ids = this.state.contactss.map((contact) => parseInt(contact.id.split('-')[1]));
-   //     const max = Math.max(...ids);
-   //     const newId = max + 1||1;
-   //     const contactId = `id-${String(newId).padStart(2, '0')}`;
-   //     return contactId;
-  //  }
+    const deleteContacts = (id) => {
+        const newData = contacts.filter((contact) => contact.id !== id)
 
-    deleteContacts = (id) => {
-        const newData = this.state.contactss.filter((contact) => contact.id !== id)
-
-        this.setState(
-            { contactss: newData })
+        setContacts(newData)
+        console.log('Contact deleted:', id);
+        console.log('Contacts:', contacts);
        
     }
 
    
     
-    inputChange = (e) => {
-        this.setState({ filter: e.target.value });
+    const inputChange = (e) => {
+        setFilter(e.target.value );
     };
     
 
-    addContact = (newContact) => {
+    const addContact = (newContact) => {
         
-        const isExisting = this.state.contactss.some((contact) =>
+        const isExisting = contacts.some((contact) =>
         { return (contact.name.toLowerCase() === newContact.name.toLowerCase() || contact.number === newContact.number) })
         
         if (!isExisting) {
   
 
-        const newData = [...this.state.contactss, newContact]
+        const newData = [...contacts, newContact]
         
 
-            this.setState({
-            contactss: newData,
-
-            })
-            console.log(this.state.contactss)
+            setContacts( newData)
+            console.log(contacts)
         }
         else {
             alert(`${newContact.name} is already in your contacts`)
         }
     }
 
-    componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    const dataContacts = JSON.parse(contacts);
-    if (dataContacts) {
-      this.setState({ contactss: dataContacts });
-    }
-  }
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.contactss !== prevState.contactss) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contactss));
-    }
-  }
+ 
+
+    useEffect(() => { 
+        console.log('Updating local storage:', contacts); 
+        
+            localStorage.setItem('contacts', JSON.stringify(contacts))
+        
+
+    },[contacts])
+
+//componentDidMount() {
+// const contacts = localStorage.getItem('contacts');
+// const dataContacts = JSON.parse(contacts);
+// if (dataContacts) {
+//   this.setState({ contactss: dataContacts });
+//  }
+// }
+// componentDidUpdate(prevProps, prevState) {
+//   if (this.state.contactss !== prevState.contactss) {
+//      localStorage.setItem('contacts', JSON.stringify(this.state.contactss));
+//    }
+//  }
     
-    render() {
-        const { contactss, filter } = this.state;
+    
+        
         const searchTerm = filter.toLowerCase();
-        const filteredContacts = contactss.filter((contact) => {
+        const filteredContacts = contacts.filter((contact) => {
             return (
                 contact.name.toLowerCase().includes(searchTerm) ||
                 contact.number.includes(searchTerm)
@@ -82,20 +84,18 @@ class Phonebook extends Component {
         return (
             <div className={css.wrapper}>
             <h1>Phonebook</h1>
-                <ContactForm state={this.state}
-                    nameChange={this.nameChange}
-                    numberChange={this.numberChange}
-                    addContact={this.addContact} />
+                <ContactForm 
+                    onAddContact={addContact} />
             <h2>Contacts</h2>
-                <Filter state={this.state}
-                inputChange={this.inputChange}/>
+                <Filter filter={filter}
+                inputChange={inputChange}/>
                 <ContactList filteredContacts={filteredContacts}
-                deleteContacts={this.deleteContacts}/>
+                deleteContacts={deleteContacts}/>
 
             </div>
     )
 }
 
-}
+
 
 export default Phonebook

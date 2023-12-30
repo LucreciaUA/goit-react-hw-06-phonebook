@@ -1,45 +1,44 @@
-import React, { Component } from "react";
+import React, {useState } from "react";
 import css from './contact-form.module.css'
 import { nanoid } from "nanoid";
 
-export class ContactForm extends Component{
-    state = {
-        name: '',
-        number: '',
-    }
-   nameChange = (e) => {
-        this.setState({ name: e.target.value });
+export const ContactForm = ({onAddContact})=>{
+
+  const [name, setName] = useState('')
+  const [number, setNumber] = useState('')
+  
+  const nameChange = (e) => {
+   setName(e.target.value);
     };
 
-  numberChange = (e) => {
-        this.setState({ number: e.target.value });
+  const numberChange = (e) => {
+      setNumber(e.target.value);
   };
     
-addContact = (e) => {
+const addContact = (e) => {
         e.preventDefault();
-    const { name, number } = this.state;
     
     const newContact = {
       id: nanoid(),
-      name,
-      number,
+      name: name,
+      number: number,      
     };
+  console.log(newContact)
+if (onAddContact) {
+      onAddContact(newContact);
+}
+  setName('');
+  setNumber('');
 
-    this.props.addContact(newContact);
-
-    this.setState({
-      name: '',
-      number: '',
-    });
   };
 
-    render(){
-        return (<form onSubmit={this.addContact}>
+  
+        return (<form onSubmit={addContact}>
                 <label htmlFor="name">Name</label><br />
-                    <input type="text" className={css.input} name="name" id="name" required value={this.state.name} onChange={this.nameChange}/><br />
+                    <input type="text" className={css.input} name="name" id="name" required value={name} onChange={nameChange}/><br />
                 <label htmlFor="number">Phone</label><br />
-                    <input type="tel" name="number" id="number" required value={this.state.number} onChange={this.numberChange} /><br />
+                    <input type="tel" name="number" id="number" required value={number} onChange={numberChange} /><br />
                 <button type="submit" className={css.submit}>Add contact</button>
-                </form>)}
+                </form>)
     
 }
