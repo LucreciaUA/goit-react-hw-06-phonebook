@@ -1,43 +1,52 @@
-import React, {useState } from "react";
+
+import { useDispatch, useSelector } from 'react-redux';
 import css from './contact-form.module.css'
 import { nanoid } from "nanoid";
+import { getContacts } from '../../redux/store/selector';
+import { addContact } from '../../redux/store/contactsSlicer';
 
-export const ContactForm = ({onAddContact})=>{
 
-  const [name, setName] = useState('')
-  const [number, setNumber] = useState('')
-  
-  const nameChange = (e) => {
-   setName(e.target.value);
-    };
+export const ContactForm = ()=>{
 
-  const numberChange = (e) => {
-      setNumber(e.target.value);
-  };
+ const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
+
     
-const addContact = (e) => {
+const addContacts = (e) => {
         e.preventDefault();
     
     const newContact = {
       id: nanoid(),
-      name: name,
-      number: number,      
+      name: e.target.elements.name.value,
+      number: e.target.elements.number.value,      
     };
-  console.log(newContact)
-if (onAddContact) {
-      onAddContact(newContact);
-}
-  setName('');
-  setNumber('');
+  
+  
+
+const isExisting = contacts.some((contact) =>
+        { return (contact.name.toLowerCase() === newContact.name.toLowerCase() || contact.number === newContact.number) })
+        
+        if (!isExisting) {
+  
+
+          dispatch(addContact(newContact))
+
+
+        }
+        else {
+            alert(`${newContact.name} is already in your contacts`)
+        }
+        
+  e.currentTarget.reset();
 
   };
 
   
-        return (<form onSubmit={addContact}>
+        return (<form onSubmit={addContacts}>
                 <label htmlFor="name">Name</label><br />
-                    <input type="text" className={css.input} name="name" id="name" required value={name} onChange={nameChange}/><br />
+                    <input type="text" className={css.input} name="name" id="name" required/><br />
                 <label htmlFor="number">Phone</label><br />
-                    <input type="tel" name="number" id="number" required value={number} onChange={numberChange} /><br />
+                    <input type="tel" name="number" id="number" required /><br />
                 <button type="submit" className={css.submit}>Add contact</button>
                 </form>)
     
